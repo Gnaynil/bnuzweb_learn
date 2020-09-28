@@ -10,7 +10,7 @@ const proSettings = {
   menu: {
     locale: true,
   },
-  title: 'Ant Design Pro',
+  title: '北师研学',
   pwa: false,
   iconfontUrl: '',
 };

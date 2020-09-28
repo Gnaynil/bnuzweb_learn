@@ -5,10 +5,6 @@ const Model = {
   state: {
     current: 'info',
     step: {
-      payAccount: 'ant-design@alipay.com',
-      receiverAccount: 'test@example.com',
-      receiverName: 'Alex',
-      amount: '500',
     },
   },
   effects: {

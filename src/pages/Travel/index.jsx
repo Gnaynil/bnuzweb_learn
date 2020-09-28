@@ -1,9 +1,12 @@
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Button, Card, DatePicker, Input, Form, InputNumber, Radio, Select, Tooltip, Cascader } from 'antd';
 import { connect, FormattedMessage, formatMessage } from 'umi';
-import React from 'react';
+import React, { useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import styles from './style.less';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+
 const FormItem = Form.Item;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -13,6 +16,7 @@ import { addressData } from '@/common/adress-data'
 
 const Subject = props => {
   const { submitting } = props;
+  const [quillValue, setQuillValue] = useState('');
   const [form] = Form.useForm();
   const [showPublicUsers, setShowPublicUsers] = React.useState(false);
 
@@ -38,6 +42,36 @@ const Subject = props => {
     addr.push(obj);
   }
 
+
+  //富文本功能项
+  const modules = {
+    toolbar: [
+      ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+      // ['blockquote', 'code-block'],
+      ['link', 'image'],
+
+      [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+      [{ 'script': 'sub' }, { 'script': 'super' }],      // superscript/subscript
+      [{ 'indent': '-1' }, { 'indent': '+1' }],          // outdent/indent
+      [{ 'direction': 'rtl' }],                         // text direction
+
+      // [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+
+      [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+      [{ 'align': [] }],
+
+      ['clean']                                         // remove formatting button
+    ]
+
+  }
+  const onValueChange = (value) => {
+    // console.log(value, 'value');
+    setQuillValue(quillValue);
+  }
+
+  //表单布局
   const formItemLayout = {
     labelCol: {
       xs: {
@@ -80,6 +114,7 @@ const Subject = props => {
       type: 'travel/submitRegularForm',
       payload: values,
     });
+    form.resetFields();
   };
 
   const onFinishFailed = errorInfo => {
@@ -93,7 +128,7 @@ const Subject = props => {
   };
 
   return (
-    <PageContainer content="subject.basic.description">
+    <PageContainer>
       <Card bordered={false}>
         <Form
           hideRequiredMark
@@ -104,6 +139,7 @@ const Subject = props => {
           name="basic"
           initialValues={{
             public: '1',
+            address: ['北京市', '北京市'],
           }}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
@@ -111,42 +147,44 @@ const Subject = props => {
         >
           <FormItem
             {...formItemLayout}
-            label="课题名称"
+            label="旅游名称"
             name="name"
             rules={[
               {
                 required: true,
-                message: '请输入课题名称',
+                message: '请输入旅游名称',
               },
             ]}
           >
-            <Input placeholder="课题名称" />
+            <Input placeholder="旅游名称" />
           </FormItem>
           <FormItem
             {...formItemLayout}
-            label="课题人数"
+            label="旅游人数"
             name="people"
             rules={[
               {
                 required: true,
-                message: '请输入课题人数',
+                pattern: new RegExp(/^[1-9]\d*$/, "g"),
+                message: '请输入正确的旅游人数',
               },
             ]}
           >
-            <Input placeholder="课题人数" />
+            <Input placeholder="旅游人数" />
           </FormItem>
           <FormItem
             {...formItemLayout}
-            label="课题单价"
+            label="旅游单价"
             name="price"
             rules={[
               {
                 required: true,
-                message: '请输入课题单价',
+                pattern: new RegExp(/^[1-9]\d*$/, "g"),
+                message: '请输入正确的旅游单价',
               },
             ]}
           >
-            <Input placeholder="课题单价" suffix="RMB" />
+            <Input placeholder="旅游单价" suffix="RMB" />
           </FormItem>
           <FormItem
             {...formItemLayout}
@@ -166,145 +204,61 @@ const Subject = props => {
               placeholder={['开始时间', '结束时间']}
             />
           </FormItem>
-
-          <FormItem
+          <Form.Item
             {...formItemLayout}
             label="活动地点"
-            name = "address"
+          >
+            <Form.Item
+              name="address"
+              rules={[{ type: 'array', required: true, message: '请输入地址' }]}
             >
-
-            <Cascader
-              options={addr}
-              rules={[{ required: true, message: '请输入你的活动地点!' }]}
-            />
-            {/* <TextArea
-              style={{
-                minHeight: 32,
-              }}
-              placeholder="请输入详细地址"
-              rows={2}
-            /> */}
-          </FormItem>
-
-
-          <FormItem
-            {...formItemLayout}
-            label="课题详情信息"
-            name="messge"
-            rules={[
-              {
-                required: true,
-                message: '请输入课题详情信息',
-              },
-            ]}
-          >
-            <TextArea
-              style={{
-                minHeight: 32,
-              }}
-              placeholder="请输入课题详情信息"
-              rows={4}
-            />
-          </FormItem>
-          
-          {/*  <FormItem
-            {...formItemLayout}
-            label="subject.standard.label"
-            name="standard"
-            rules={[
-              {
-                required: true,
-                message: 'subject.standard.required',
-              },
-            ]}
-          >
-            <TextArea
-              style={{
-                minHeight: 32,
-              }}
-              placeholder="subject.standard.placeholder"
-              rows={4}
-            />
-          </FormItem>
-          <FormItem
-            {...formItemLayout}
-            label={
-              <span>
-                subject.client.label
-                <em className={styles.optional}>
-                  subject.form.optional
-                  <Tooltip title="subject.label.tooltip">
-                    <InfoCircleOutlined
-                      style={{
-                        marginRight: 4,
-                      }}
-                    />
-                  </Tooltip>
-                </em>
-              </span>
-            }
-            name="client"
-          >
-            <Input placeholder="subject.client.placeholder" />
-          </FormItem>
-          <FormItem
-            {...formItemLayout}
-            label={
-              <span>
-                subject.invites.label
-                <em className={styles.optional}>subject.form.optional</em>
-              </span>
-            }
-            name="invites"
-          >
-            <Input placeholder="subject.invites.placeholder" />
-          </FormItem>
-          <FormItem
-            {...formItemLayout}
-            label={
-              <span>
-                subject.weight.label
-                <em className={styles.optional}>subject.form.optional</em>
-              </span>
-            }
-            name="weight"
-          >
-            <InputNumber placeholder="subject.weight.placeholder" min={0} max={100} />
-            <span className="ant-form-text">%</span>
-          </FormItem>
-          <FormItem
-            {...formItemLayout}
-            label="subject.public.label"
-            help="subject.label.help"
-            name="publicType"
-          >
-            <div>
-              <Radio.Group>
-                <Radio value="1">subject.radio.public</Radio>
-                <Radio value="2">subject.radio.partially-public</Radio>
-                <Radio value="3">subject.radio.private</Radio>
-              </Radio.Group>
-              <FormItem
+              <Cascader
+                options={addr}
+                style={{ width: '100%' }}
+              />
+            </Form.Item>
+            <Form.Item
+              noStyle
+              name="detailed"
+              rules={
+                [
+                  {
+                    required: true,
+                    message: '请输入详细地址',
+                  },
+                ]}
+            >
+              <TextArea
                 style={{
-                  marginBottom: 0,
+                  minHeight: 32,
                 }}
-                name="publicUsers"
-              >
-                <Select
-                  mode="multiple"
-                  placeholder="subject.publicUsers.placeholder"
-                  style={{
-                    margin: '8px 0',
-                    display: showPublicUsers ? 'block' : 'none',
-                  }}
-                >
-                  <Option value="1">subject.option.A</Option>
-                  <Option value="2">subject.option.B</Option>
-                  <Option value="3">subject.option.C</Option>
-                </Select>
-              </FormItem>
-            </div>
-          </FormItem> */}
+                placeholder="请输入详细地址"
+                rows={2}
+              />
+            </Form.Item>
+          </Form.Item>
+
+
+          <FormItem
+            {...formItemLayout}
+            label="旅游详情信息"
+            name="messge"
+            // rules={[
+            //   {
+            //     required: true,
+            //     message: '请输入旅游详情信息',
+            //   },
+            // ]}
+          >
+            <ReactQuill
+              value={quillValue}
+              placeholder="请输入旅游详情信息"
+              theme="snow"
+              modules={modules}
+              onChange={onValueChange}
+            />
+          </FormItem>
+
           <FormItem
             {...submitFormLayout}
             style={{
@@ -321,9 +275,7 @@ const Subject = props => {
   );
 };
 
-const mapStateToProps = ({loading}) => {
-  console.log(loading);
-  
+const mapStateToProps = ({ loading }) => {
   return {
     submitting: loading.effects['subject/submitRegularForm'],
   }

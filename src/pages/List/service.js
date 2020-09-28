@@ -1,14 +1,11 @@
-// import request from 'umi-request';
-import config from '@/config'
-import request from '@/utils/ins_request'
-// `${config.testUrl}/users`
-// /users'
-// /orgservice/org-item/getAllList
-//2653
-export const getData = async (params) => {
-  return request('/personalized', {
-    method: 'get',
+// import config from '@/config'
+import request from '@/utils/bas_request'
+// import request from '@/utils/bas02_request'
 
+export const getData = async (params) => {
+  return request("/orgservice/org-item/getAllList", {
+    // mode: 'no-cors',
+    method: 'GET',
   })
     .then(function (response) {
       return response;
@@ -21,9 +18,8 @@ export const getData = async (params) => {
 }
 
 export const getDescribe = async (params) => {
-  return request('/orgservice/v1/org-describe/auth/getDescribe', {
+  return request('/adminservice/ad-realname/getRealnameInfo/{1}/{15}', {
     method: 'POST',
-
   })
     .then(function (response) {
       return response;
@@ -34,24 +30,9 @@ export const getDescribe = async (params) => {
     });
 }
 
-export const deleteData = async (params) => {
-  return request('/users/2653', {
-    method: 'PATCH',
-
-  })
-    .then(function (response) {
-      return response;
-    })
-    .catch(function (error) {
-      console.log(error);
-      // return false;
-    });
-}
-
-
-// export const getData = async (params) => {
-//   return request('http://public-api-v1.aspirantzhang.com/users', {
-//     method: 'get',
+// export const deleteData = async (params) => {
+//   return request('/users/2653', {
+//     method: 'PATCH',
 
 //   })
 //     .then(function (response) {
@@ -61,5 +42,5 @@ export const deleteData = async (params) => {
 //       console.log(error);
 //       // return false;
 //     });
-
 // }
+

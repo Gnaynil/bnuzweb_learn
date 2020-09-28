@@ -24,6 +24,14 @@ export default defineConfig({
   },
   // umi routes: https://umijs.org/docs/routing
   routes: [
+    // {
+    //   path:'/admin',
+    //   component:'@/pages/ProfileAdvanced'
+    // },
+    {
+      path: '/admin',
+      component: '@/pages/AdminList',
+    },
     {
       path: '/',
       component: '../layouts/SecurityLayout',
@@ -43,18 +51,6 @@ export default defineConfig({
               component: './Welcome',
             },
             {
-              name: 'listbasiclist',
-              icon: 'smile',
-              path: '/listbasiclist',
-              component: './ListBasicList',
-            },
-            {
-              name: 'list.table-list',
-              icon: 'table',
-              path: '/list',
-              component: './ListTableList',
-            },
-            {
               name: 'change.message',
               icon: 'smile',
               path: '/changemessage',
@@ -71,6 +67,30 @@ export default defineConfig({
               icon: 'smile',
               path: '/travel',
               component: './Travel',
+            },
+            {
+              name: 'announcement',
+              icon: 'smile',
+              path: '/announcement',
+              component: './PublishAnnouncement',
+            },
+            {
+              name: 'listbasiclist',
+              icon: 'smile',
+              path: '/listbasiclist',
+              component: './ListBasicList',
+            },
+            {
+              name: 'orgrealname',
+              icon: 'smile',
+              path: '/orgrealname',
+              component: './OrgRealName',
+            },
+            {
+              name: 'listtablelist',
+              icon: 'smile',
+              path: '/listtablelist',
+              component: './ListTableList',
             },
             {
               component: './404',

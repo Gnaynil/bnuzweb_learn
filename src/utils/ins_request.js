@@ -30,12 +30,11 @@ const errorHandler = function(error) {
 // 网易云:http://123.207.32.32:9001
 const extendRequest = extend({ 
   errorHandler,
-  prefix:'http://123.207.32.32:9001',
-  // headers:{
-  //   "Accept": "*/*",
-  //   'token':'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJvcmctdXNlciIsImlhdCI6MTYwMDMzMDgxOSwiZXhwIjoxNjAwNDE3MjE5LCJpZCI6IjEyNjU0ODU4NDUwODc5MjQyMjYiLCJuYW1lIjoiY2hlbmR4In0.bqAd_YYtYTm_13JdBPWDuFfY86KYjH5JStLPD93WZBQ',
-  // }
-
+  prefix:'http://120.25.124.250:8001',
+  headers:{
+    "Accept": "*/*",
+    // 'token':'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJvcmctdXNlciIsImlhdCI6MTYwMDMzMDgxOSwiZXhwIjoxNjAwNDE3MjE5LCJpZCI6IjEyNjU0ODU4NDUwODc5MjQyMjYiLCJuYW1lIjoiY2hlbmR4In0.bqAd_YYtYTm_13JdBPWDuFfY86KYjH5JStLPD93WZBQ',
+  }
 });
 /**
  * 配置request请求时的默认参数

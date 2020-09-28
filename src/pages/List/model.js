@@ -8,7 +8,6 @@ const Model = {
   },
   effects: {
     *getRemote({ payload }, { put, call }) {
-
       const data = yield call(getData, { payload });
       console.log(data);
       if (data) {

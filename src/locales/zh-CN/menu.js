@@ -52,13 +52,16 @@ export default {
 
 
 
-  'menu.change.message':'修改信息',
+  'menu.change.message':'我的信息',
   'menu.change.Home':'修改主页',
   'menu.subject':'发布课题',
   'menu.travel':'发布旅游',
   'menu.analysis':'数据分析',
-  'menu.publish.announcement':'发布公告',
-  'menu.publish.news':'发布新闻',
-  'menu.listbasiclist':'标准列表'
+  'menu.announcement':'发布公告',
+  'menu.news':'发布新闻',
+  'menu.listbasiclist':'标准列表',
+  'menu.高级表单':'高级表单',
+  'menu.orgrealname':'机构信息审核',
+  'menu.listtablelist':'查询列表'
 
 };

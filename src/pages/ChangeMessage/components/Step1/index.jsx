@@ -1,8 +1,12 @@
-import React from 'react';
-import { Form, Button, Divider, Input, Select } from 'antd';
+import React, { useState } from 'react';
+import { Form, Button, Divider, Input, Select, Cascader } from 'antd';
 import { connect } from 'umi';
 import styles from './index.less';
+import { addressData } from '@/common/adress-data'
+
+
 const { Option } = Select;
+const { TextArea } = Input;
 const formItemLayout = {
   labelCol: {
     span: 5,
@@ -11,6 +15,31 @@ const formItemLayout = {
     span: 19,
   },
 };
+
+
+//地点数据
+const addr = [];
+const province = Object.keys(addressData);
+for (let item in province) {
+  const key = province[item];
+  const cityList = [];
+  if (addressData[key].length > 0) {
+    for (let item1 in addressData[key]) {
+      const obj = {
+        'value': addressData[key][item1],
+        'label': addressData[key][item1]
+      }
+      cityList.push(obj);
+    }
+  }
+  const obj = {
+    'value': key,
+    'label': key,
+    'children': cityList
+  }
+  addr.push(obj);
+}
+
 
 const Step1 = (props) => {
   const { dispatch, data } = props;
@@ -37,7 +66,9 @@ const Step1 = (props) => {
     }
   };
 
+
   return (
+
     <>
       <Form
         {...formItemLayout}
@@ -45,84 +76,81 @@ const Step1 = (props) => {
         layout="horizontal"
         className={styles.stepForm}
         hideRequiredMark
-        initialValues={data}
+        initialValues={{
+          data,
+          address: ['北京市', '北京市'],
+        }}
       >
         <Form.Item
-          label="付款账户"
-          name="payAccount"
+          label="法人姓名"
+          name="Name"
           rules={[
             {
               required: true,
-              message: '请选择付款账户',
+              message: '请填写法人姓名',
             },
           ]}
         >
-          <Select placeholder="test@example.com">
-            <Option value="ant-design@alipay.com">ant-design@alipay.com</Option>
-          </Select>
+          <Input placeholder="法人姓名" />
         </Form.Item>
-        <Form.Item label="收款账户">
-          <Input.Group compact>
-            <Select
-              defaultValue="alipay"
-              style={{
-                width: 100,
-              }}
-            >
-              <Option value="alipay">支付宝</Option>
-              <Option value="bank">银行账户</Option>
-            </Select>
-            <Form.Item
-              noStyle
-              name="receiverAccount"
-              rules={[
+
+        <Form.Item
+          {...formItemLayout}
+          label="活动地点"
+        >
+          <Form.Item
+            name="address"
+            rules={[{ type: 'array', required: true, message: '请输入地址' }]}
+          >
+            <Cascader
+              options={addr}
+              style={{ width: '100%' }}
+            />
+          </Form.Item>
+          <Form.Item
+            noStyle
+            name="detailed"
+            rules={
+              [
                 {
                   required: true,
-                  message: '请输入收款人账户',
-                },
-                {
-                  type: 'email',
-                  message: '账户名应为邮箱格式',
+                  message: '请输入详细地址',
                 },
               ]}
-            >
-              <Input
-                style={{
-                  width: 'calc(100% - 100px)',
-                }}
-                placeholder="test@example.com"
-              />
-            </Form.Item>
-          </Input.Group>
+          >
+            <TextArea
+              style={{
+                minHeight: 32,
+              }}
+              placeholder="请输入详细地址"
+              rows={2}
+            />
+          </Form.Item>
         </Form.Item>
         <Form.Item
-          label="收款人姓名"
-          name="receiverName"
+          label="联系人"
+          name="contactName"
           rules={[
             {
               required: true,
-              message: '请输入收款人姓名',
+              message: '请输入联系人姓名',
             },
           ]}
         >
-          <Input placeholder="请输入收款人姓名" />
+          <Input placeholder="请输入联系人姓名" />
         </Form.Item>
         <Form.Item
-          label="转账金额"
-          name="amount"
-          rules={[
-            {
-              required: true,
-              message: '请输入转账金额',
-            },
-            {
-              pattern: /^(\d+)((?:\.\d+)?)$/,
-              message: '请输入合法金额数字',
-            },
-          ]}
+          label="联系电话"
+          name="phoneNumber"
+          rules={[{ len:11,required: true, message: '请输入正确的联系电话' }]}
         >
-          <Input prefix="￥" placeholder="请输入金额" />
+          <Input placeholder="请输入联系人电话" style={{ width: '100%' }} />
         </Form.Item>
+        <Divider
+        style={{
+          margin: '24px 0',
+        }}
+      />
         <Form.Item
           wrapperCol={{
             xs: {
@@ -145,17 +173,6 @@ const Step1 = (props) => {
           margin: '40px 0 24px',
         }}
       />
-      <div className={styles.desc}>
-        <h3>说明</h3>
-        <h4>转账到支付宝账户</h4>
-        <p>
-          如果需要，这里可以放一些关于产品的常见问题说明。如果需要，这里可以放一些关于产品的常见问题说明。如果需要，这里可以放一些关于产品的常见问题说明。
-        </p>
-        <h4>转账到银行卡</h4>
-        <p>
-          如果需要，这里可以放一些关于产品的常见问题说明。如果需要，这里可以放一些关于产品的常见问题说明。如果需要，这里可以放一些关于产品的常见问题说明。
-        </p>
-      </div>
     </>
   );
 };

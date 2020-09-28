@@ -79,12 +79,21 @@ const TableList = () => {
   const actionRef = useRef();
   const [row, setRow] = useState();
   const [selectedRowsState, setSelectedRows] = useState([]);
+  const getList = async(params, sorter, filter) => {
+    const response = await queryRule({ 
+      ...params, 
+      sorter, 
+      filter
+    })
+    console.log(response);
+    return Promise.resolve(response)
+  }
   const columns = [
     {
       title: '规则名称',
       dataIndex: 'name',
       tip: '规则名称是唯一的 key',
-      fieldProps: {
+      formItemProps: {
         rules: [
           {
             required: true,
@@ -171,6 +180,7 @@ const TableList = () => {
       ),
     },
   ];
+  console.log(getList);
   return (
     <PageContainer>
       <ProTable
@@ -185,7 +195,7 @@ const TableList = () => {
             <PlusOutlined /> 新建
           </Button>,
         ]}
-        request={(params, sorter, filter) => queryRule({ ...params, sorter, filter })}
+        request={getList}
         columns={columns}
         rowSelection={{
           onChange: (_, selectedRows) => setSelectedRows(selectedRows),

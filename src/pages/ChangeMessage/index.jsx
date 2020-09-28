@@ -40,13 +40,13 @@ const ChangeMessage = ({ current }) => {
     setStepComponent(component);
   }, [current]);
   return (
-    <PageContainer content="将一个冗长或用户不熟悉的表单任务分成多个步骤，指导用户完成。">
+    <PageContainer>
       <Card bordered={false}>
         <>
           <Steps current={currentStep} className={styles.steps}>
-            <Step title="填写转账信息" />
-            <Step title="确认转账信息" />
-            <Step title="完成" />
+            <Step title="填写基础资料" />
+            <Step title="附件上传" />
+            <Step title="资料审核" />
           </Steps>
           {stepComponent}
         </>

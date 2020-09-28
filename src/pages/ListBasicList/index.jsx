@@ -56,6 +56,7 @@ const ListContent = ({ data: { owner, createdAt, percent, status } }) => (
 );
 
 export const ListBasicList = (props) => {
+  { console.log(props); }
   const addBtn = useRef(null);
   const {
     loading,
@@ -176,14 +177,17 @@ export const ListBasicList = (props) => {
         <div className={styles.standardList}>
           <Card bordered={false}>
             <Row>
-              <Col sm={8} xs={24}>
-                <Info title="我的待办" value="8个任务" bordered />
+              <Col sm={6} mxs={20}>
+                <Info title="以发布课程" value="8" bordered />
               </Col>
-              <Col sm={8} xs={24}>
-                <Info title="本周任务平均处理时间" value="32分钟" bordered />
+              <Col sm={6} xs={20}>
+                <Info title="已发布旅行" value="3" bordered />
               </Col>
-              <Col sm={8} xs={24}>
-                <Info title="本周完成任务数" value="24个任务" />
+              <Col sm={6} xs={20}>
+                <Info title="已发布新闻" value="2" bordered />
+              </Col>
+              <Col sm={6} xs={20}>
+                <Info title="已发布公告" value="2" />
               </Col>
             </Row>
           </Card>
@@ -258,7 +262,13 @@ export const ListBasicList = (props) => {
     </div>
   );
 };
-export default connect(({ listBasicList, loading }) => ({
-  listBasicList,
-  loading: loading.models.listBasicList,
-}))(ListBasicList);
+const mapStateToProps = ({ listBasicList, loading }) => {
+  console.log(1111);
+  console.log(listBasicList);
+  return {
+    listBasicList,
+    loading: loading.models.listBasicList,
+  }
+}
+
+export default connect(mapStateToProps)(ListBasicList);

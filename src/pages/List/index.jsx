@@ -1,53 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./index.less";
-import { List, Avatar, Table } from "antd";
+import { Table, notification, Card } from "antd";
 import { connect } from 'umi';
+import { getData } from "./service";
 
 
+const index = ({ list }) => {
+  const [value, setValue] = useState('test');
 
-const index = ({ list}) => {
-  // const columns = [
-  //   {
-  //     title: 'ID',
-  //     dataIndex: 'id',
-  //     valueType: 'digit',
-  //     key: 'id',
-  //   },
-  //   {
-  //     title: '机构名称',
-  //     dataIndex: 'orgName',
-  //     valueType: 'text',
-  //     key: 'orgName',
-  //     render: (text) => <a>{text}</a>,
-  //   },
-  //   {
-  //     title: 'Price',
-  //     dataIndex: 'price',
-  //     valueType: 'digit',
-  //     key: 'price',
-  //   },
-  // ]
-  // const columns = [
-  //   {
-  //     title: 'ID',
-  //     dataIndex: 'id',
-  //     valueType: 'digit',
-  //     key: 'id',
-  //   },
-  //   {
-  //     title: 'Name',
-  //     dataIndex: 'name',
-  //     valueType: 'text',
-  //     key: 'name',
-  //     render: (text) => <a>{text}</a>,
-  //   },
-  //   {
-  //     title: 'Create Time',
-  //     dataIndex: 'create_time',
-  //     valueType: 'dateTime',
-  //     key: 'create_time',
-  //   },
-  // ]
+  const handleChange = (value) => { setValue(value) };
+
+  
+
   const columns = [
     {
       title: 'ID',
@@ -56,38 +20,33 @@ const index = ({ list}) => {
       key: 'id',
     },
     {
-      title: 'Name',
-      dataIndex: 'name',
+      title: '机构名称',
+      dataIndex: 'orgName',
       valueType: 'text',
-      key: 'name',
+      key: 'orgName',
       render: (text) => <a>{text}</a>,
-    }
+    },
+    {
+      title: 'Price',
+      dataIndex: 'price',
+      valueType: 'digit',
+      key: 'price',
+    },
   ]
-  // const columns = [
-  //   {
-  //     title: 'BusName',
-  //     dataIndex: 'busName',
-  //     valueType: 'text',
-  //     key: 'busName',
-  //   },
-  //   {
-  //     title: 'BusCapital',
-  //     dataIndex: 'busCapital',
-  //     valueType: 'text',
-  //     key: 'busCapital',
-  //     render: (text) => <a>{text}</a>,
-  //   },
-  // ]
-return (
-  <div>
-    <Table columns={columns} dataSource={list.result}    rowKey='id' />
-  </div>
-)
+  console.log(list.data);
+  return (
+    <div>
+      <Table columns={columns} dataSource={list.data} rowKey='id' />
+
+    </div>
+  )
 }
 
 const mapStateToProps = ({ list }) => {
-  
   console.log(list);
+
+  // console.log(list.data);
+  // console.log(list);
   // console.log('333');
   return {
     list,
