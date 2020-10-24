@@ -17,30 +17,8 @@ const Subject = props => {
   const [quillValue, setQuillValue] = useState('');
   const { submitting } = props;
   const [form] = Form.useForm();
-  const [showPublicUsers, setShowPublicUsers] = React.useState(false);
+  const [showPublicUsers, setShowPublicUsers] = useState(false);
 
-  //地点数据
-  const addr = [];
-  const province = Object.keys(addressData);
-  for (let item in province) {
-    const key = province[item];
-    const cityList = [];
-    if (addressData[key].length > 0) {
-      for (let item1 in addressData[key]) {
-        const obj = {
-          'value': addressData[key][item1],
-          'label': addressData[key][item1]
-        }
-        cityList.push(obj);
-      }
-    }
-    const obj = {
-      'value': key,
-      'label': key,
-      'children': cityList
-    }
-    addr.push(obj);
-  }
 
   //富文本功能项
   const modules = {
@@ -142,7 +120,7 @@ const Subject = props => {
           name="basic"
           initialValues={{
             public: '1',
-            address: ['北京市', '北京市'],
+
           }}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
@@ -215,10 +193,7 @@ const Subject = props => {
               name="address"
               rules={[{ type: 'array', required: true, message: '请输入地址' }]}
             >
-              <Cascader
-                options={addr}
-                style={{ width: '100%' }}
-              />
+          
             </Form.Item>
             <Form.Item
               noStyle
@@ -240,7 +215,6 @@ const Subject = props => {
               />
             </Form.Item>
           </Form.Item>
-
           <FormItem
             {...formItemLayout}
             label="课题详情信息"
@@ -252,13 +226,13 @@ const Subject = props => {
             //   },
             // ]}
           >
-            <ReactQuill
+       {/*      <ReactQuill
               value={quillValue}
               placeholder="请输入课题详情信息"
               theme="snow"
               modules={modules}
               onChange={onQuillValueChange}
-            />
+            /> */}
           </FormItem>
           <FormItem
             {...submitFormLayout}

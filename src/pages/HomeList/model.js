@@ -1,57 +1,27 @@
-import { addFakeList, queryFakeList, removeFakeList, updateFakeList } from './service';
+import { getDescribe ,getLoginInfo} from './service';
 
 const Model = {
-  namespace: 'homelist',
+  namespace: 'HomeList',
   state: {
-    list: [],
+    user:{}
   },
   effects: {
-    *fetch({ payload }, { call, put }) {
-      const response = yield call(queryFakeList, payload);
-      yield put({
-        type: 'queryList',
-        payload: Array.isArray(response) ? response : [],
-      });
-    },
-
-    *appendFetch({ payload }, { call, put }) {
-      const response = yield call(queryFakeList, payload);
-      yield put({
-        type: 'appendList',
-        payload: Array.isArray(response) ? response : [],
-      });
-    },
-
-    *submit({ payload }, { call, put }) {
-      let callback;
-
-      if (payload.id) {
-        callback = Object.keys(payload).length === 1 ? removeFakeList : updateFakeList;
-      } else {
-        callback = addFakeList;
+    *get({ payload }, { put, call }) {
+      const data = yield call(getLoginInfo, { payload });
+      // console.log(data,2222);
+      if (data) {
+        yield put({
+          type: "getLogin",
+          payload: data.data.data
+        })
       }
-
-      const response = yield call(callback, payload); // post
-
-      yield put({
-        type: 'queryList',
-        payload: response,
-      });
     },
+    
   },
   reducers: {
-    queryList(state, action) {
-      return { ...state, list: action.payload };
-    },
-
-    appendList(
-      state = {
-        list: [],
-      },
-      action,
-    ) {
-      return { ...state, list: state.list.concat(action.payload) };
-    },
+    getLogin(state, action) {
+      return { ...state, user: action.payload };
+    }
   },
 };
 export default Model;

@@ -1,37 +1,8 @@
-import request from 'umi-request';
+import request from '@/utils/bas_request'
 
-export async function queryFakeList(params) {
-  return request('/api/fake_list', {
-    params,
-  });
-}
-export async function removeFakeList(params) {
-  const { count = 5, ...restParams } = params;
-  return request('/api/fake_list', {
+export async function getLoginInfo(params) {
+  return request(`/orgservice/v1/org-user/auth/getLoginInfo`, {
     method: 'POST',
-    params: {
-      count,
-    },
-    data: { ...restParams, method: 'delete' },
-  });
-}
-export async function addFakeList(params) {
-  const { count = 5, ...restParams } = params;
-  return request('/api/fake_list', {
-    method: 'POST',
-    params: {
-      count,
-    },
-    data: { ...restParams, method: 'post' },
-  });
-}
-export async function updateFakeList(params) {
-  const { count = 5, ...restParams } = params;
-  return request('/api/fake_list', {
-    method: 'POST',
-    params: {
-      count,
-    },
-    data: { ...restParams, method: 'update' },
+    // body: JSON.stringify(params.payload),
   });
 }

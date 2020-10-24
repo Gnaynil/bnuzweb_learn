@@ -1,8 +1,6 @@
 import React from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import { Card, Alert, Typography } from 'antd';
-import styles from './Welcome.less';
-import HomeList from './HomeList';
 export default () => (
   <PageContainer>
     <Card>
@@ -17,7 +15,5 @@ export default () => (
         }}
       />
     </Card>
-    <HomeList />
-    
   </PageContainer>
 );
