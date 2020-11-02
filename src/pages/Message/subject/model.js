@@ -6,7 +6,7 @@ const Model = {
     listSubject: [],
     meta: {
       current: 1,
-      limit: 1000
+      limit: 500
     },
     realnamelist: [],
     regionList: [],

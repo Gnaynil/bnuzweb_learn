@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { message, Form, Input, Upload, Button, DatePicker, InputNumber, Card,Modal } from "antd";
+// eslint-disable-next-line no-console
+import React, { useState, useEffect, useRef } from 'react';
+import { message, Form, Modal, Input, Upload, Button, Card } from "antd";
+import { connect, history } from 'umi';
 import { UploadOutlined } from '@ant-design/icons';
-import { connect } from 'umi';
 import { PageContainer } from '@ant-design/pro-layout';
-import { updateActivity } from '../../service';
-// import '/braft-editor/dist/index.css'
+import { addNews } from './service';
+import BraftEditor from 'braft-editor';
 import 'braft-editor/dist/index.css'
-import moment from 'moment';
-import BraftEditor from 'braft-editor'
-import { updateItem } from '../../service';
-const UpdateActivityItem = (props) => {
-  const {
-    loading,
-  } = props;
-  const ItemMessage = JSON.parse(localStorage.getItem("ItemMessage"));
+import './index.less'
 
+
+
+const News = props => {
+  const {
+    loading
+  } = props;
   const [form] = Form.useForm();
   const submitFormLayout = {
     wrapperCol: {
@@ -38,9 +38,9 @@ const UpdateActivityItem = (props) => {
         span: 0,
         offset: 0
       },
-      xl:{
+      xl: {
         span: 2,
-        offset: 2
+        offset: 1
       },
       xxl:{
         span: 4,
@@ -59,17 +59,10 @@ const UpdateActivityItem = (props) => {
     },
   };
 
-  const [fileUpload, setfileUpload] = useState([{
-    uid: '-1',
-    name: '已上传图片',
-    status: 'done',
-    url: ItemMessage.cover,
-  }]);
   //图片上传到服务器
+  const [fileUpload, setfileUpload] = useState([]);
   const handleUploadChange = info => {
-    console.log(info);
     let picList = [...info.fileList];
-    // console.log(picList);
     picList = picList.slice(-1);
     picList = picList.map(file => {
       if (file.response) {
@@ -87,9 +80,8 @@ const UpdateActivityItem = (props) => {
     action: 'http://119.29.92.83:8003/ossservice/v1/auth/file/upload',
     onChange: handleUploadChange,
   }
-
   //富文本上传媒体
-  const [editorState, SetEditorState] = useState(BraftEditor.createEditorState(ItemMessage.detail));
+  const [editorState, SetEditorState] = useState(BraftEditor.createEditorState());
   const [editorModalVisible, setEditorModalVisible] = useState(false);
   const editorHandleChange = (value) => {
     SetEditorState(value);
@@ -131,7 +123,7 @@ const UpdateActivityItem = (props) => {
     const errorFn = (response) => {
       // 上传发生错误时调用param.error
       param.error({
-        msg: '上传失败'
+        msg: 'unable to upload.'
       })
     }
 
@@ -145,138 +137,61 @@ const UpdateActivityItem = (props) => {
     xhr.send(fd)
   }
 
-  const BackToSubject = () => {
-    history.back();
-  }
 
 
-  const onUpdateFinish = async (params) => {
+
+
+  const onFinish = async (params) => {
+    console.log(params);
     let setCover;
-    if (params.cover.fileList != undefined) {
-      if (params.cover.fileList.length == 0) {
-        setCover = "http://chendx-file.oss-cn-shenzhen.aliyuncs.com/2020/10/22/00f77a99-9196-4f58-bcce-d5598c1899fbunloading.png";
-      } else setCover = params.cover.fileList[0].url;
-    }
-    const result = await updateItem({
+    console.log(params.cover.fileList);
+    if (params.cover.fileList.length == 0) {
+      setCover = "http://chendx-file.oss-cn-shenzhen.aliyuncs.com/2020/10/22/00f77a99-9196-4f58-bcce-d5598c1899fbunloading.png";
+    } else setCover = params.cover.fileList[0].url;
+    const result = await addNews({
       ...params,
-      detail: params.detail.toHTML(),
+      content: params.content.toHTML(),
       cover: setCover
     });
+
     if (result) {
-      history.back();
-      message.success('修改成功');
+      history.push("/message/news");
+      message.success('添加成功');
     }
   }
-
   const onFinishFailed = (errorInfo) => {
     message.error(errorInfo.errorFields[0].errors[0]);
   };
   const HandleFinish = (value) => {
-    onUpdateFinish(value);
+    onFinish(value);
     form.resetFields();
-    setfileUpload([])
   }
 
+
   return (
-    <PageContainer
-      title="修改活动"
-      extra={
-        <div>
-          <Button type="primary" onClick={BackToSubject}>返回上一页</Button>
-        </div>
-      }>
-      <Card bordered={false} style={{ minWidth: 1500 }}>
+    <PageContainer>
+      <Card
+        style={{ minWidth: 1500 }}
+      >
         <Form
           {...formLayout}
           name="basic"
           form={form}
           onFinish={(value) => HandleFinish(value)}
           onFinishFailed={onFinishFailed}
-          initialValues={{
-            ...ItemMessage,
-            detail: BraftEditor.createEditorState(ItemMessage.detail),
-            beginTime: moment(ItemMessage.beginTime),
-            endTime: moment(ItemMessage.endTime),
-          }}
         >
           <Form.Item
-            label="机构ID"
-            name="orgId"
-            hidden
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            label="ID"
-            name="id"
-            hidden
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            label="活动ID"
-            name="orgActId"
-            hidden
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            label="机构名字"
-            name="orgName"
-            hidden
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            label="发布情况"
-            hidden
-            name="status"
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            label="活动名"
-            name="name"
+            label="标题"
+            name="title"
+            rules={[
+              {
+                required: true,
+                message: '请输入标题',
+              },
+            ]}
 
-            rules={[
-              {
-                required: true,
-                message: '请输入活动名',
-              },
-            ]}
           >
-            <Input style={{ width: '200px' }} />
-          </Form.Item>
-          <Form.Item
-            label="商品数量"
-            name="itemNum"
-            rules={[
-              {
-                required: true,
-                message: '请输入商品数量',
-              },
-            ]}
-          >
-            <InputNumber min={0} />
-          </Form.Item>
-          <Form.Item
-            label="销售数量"
-            name="sellNum"
-            hidden
-          >
-            <InputNumber min={0} />
-          </Form.Item>
-          <Form.Item
-            label="活动价格"
-            name="price"
-            rules={[
-              {
-                required: true,
-                message: '请输入活动价格',
-              },
-            ]}
-          >
-            <InputNumber min={0} />
+            <Input style={{ width: 300 }} />
           </Form.Item>
           <Form.Item
             label="上传封面"
@@ -293,33 +208,16 @@ const UpdateActivityItem = (props) => {
             </Upload>
           </Form.Item>
           <Form.Item
-            label="开始时间"
-            name="beginTime"
-            rules={[
-              {
-                required: true,
-                message: '请输入开始时间'
-              }
-            ]}
-          >
-            <DatePicker showTime />
+            label="内容"
+            name="content"
 
-          </Form.Item>
-          <Form.Item
-            label="结束时间"
-            name="endTime"
             rules={[
               {
                 required: true,
-                message: '请输入结束时间'
-              }
+                message: '请输入内容',
+              },
             ]}
-          >
-            <DatePicker showTime />
-          </Form.Item>
-          <Form.Item
-            label="活动描述"
-            name="detail"
+
           >
             <BraftEditor
               style={{ minWidth: 800 }}
@@ -351,28 +249,25 @@ const UpdateActivityItem = (props) => {
             </Button>
           </Form.Item>
         </Form>
+        <Modal
+          title="内容"
+          forceRender
+          visible={editorModalVisible}
+          onOk={() => { setEditorModalVisible(false) }}
+          onCancel={() => { setEditorModalVisible(false) }}
+          width={850}
+        >
+          <div dangerouslySetInnerHTML={{ __html: editorState.toHTML() }}></div>
+        </Modal>
       </Card>
-      <Modal
-        title="内容"
-        forceRender
-        visible={editorModalVisible}
-        onOk={() => { setEditorModalVisible(false) }}
-        onCancel={() => { setEditorModalVisible(false) }}
-        width={850}
-      >
-        <div dangerouslySetInnerHTML={{ __html: editorState.toHTML() }}></div>
-      </Modal>
     </PageContainer>
-  )
-}
 
-
-const mapStateToProps = ({ listSubject, loading }) => {
+  );
+};
+const mapStateToProps = ({ loading }) => {
   return {
-    listSubject,
     loading: loading.models.AdminList,
   }
 }
-export default connect(mapStateToProps)(UpdateActivityItem);
 
-
+export default connect(mapStateToProps)(News);

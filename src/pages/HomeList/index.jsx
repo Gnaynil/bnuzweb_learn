@@ -7,7 +7,8 @@ const index = props => {
   const {
     dispatch,
     listTravel: { listTravel, meta },
-    listSubject:{listSubject}
+    listSubject:{listSubject},
+    listNews:{listNews},
   } = props;
   useEffect(() => {
     dispatch({
@@ -26,7 +27,14 @@ const index = props => {
       current: meta.current,
       limit: meta.limit
     });
+    dispatch({
+      type: 'listNews/fetch',
+      payload: {
+        
+      },
+    });
   }, []);
+  
 
   const Info = ({ title, value, bordered }) => (
     <div className={styles.headerInfo}>
@@ -37,12 +45,16 @@ const index = props => {
   );
   let totalSubject;
   let totalTravel;
+  let totalNews;
   if(listSubject){
     totalSubject = listSubject.length;
   }else totalSubject=0;
   if(listTravel){
     totalTravel = listTravel.length;
   }else totalTravel=0;
+  if(listNews){
+    totalNews = listNews.length;
+  }else totalNews=0;
 
   return (
     <div
@@ -60,7 +72,7 @@ const index = props => {
             <Info title="已发布旅行" value={totalTravel} bordered />
           </Col>
           <Col sm={8} xs={18}>
-            <Info title="已发布新闻" value="2" bordered />
+            <Info title="已发布新闻" value={totalNews} bordered />
           </Col>
 
         </Row>
@@ -68,10 +80,11 @@ const index = props => {
     </div>
   )
 }
-const mapStateToProps = ({ listTravel, loading,listSubject }) => {
+const mapStateToProps = ({ listTravel,listSubject,listNews,orgUserInfo,loading }) => {
   return {
     listTravel,
     listSubject,
+    listNews,
     loading: loading.models.HomeList,
   }
 }

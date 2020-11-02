@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Image, message, Modal, Form, Select, Input, Button, Pagination } from "antd";
-import { connect,history } from 'umi';
+import { connect } from 'umi';
 import { getDescribe, UpdateDescribe } from "./service";
 import { PageContainer } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
 import { set } from "numeral";
-
 
 const { Search } = Input;
 const formLayout = {
@@ -200,61 +199,96 @@ const index = props => {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [record, setRecord] = useState(undefined);
   const columns = [
-    // {
-    //   title: '审核ID',
-    //   dataIndex: 'id',
-    //   valueType: 'text',
-    //   key: 'id',
-    // },
-    // {
-    //   title: '机构ID',
-    //   dataIndex: 'orgId',
-    //   valueType: 'text',
-    //   key: 'orgid',
-    // },
     {
-      title: '机构名称',
-      dataIndex: 'orgName',
+      title: '审核ID',
+      dataIndex: 'id',
       valueType: 'text',
-      key: 'orgName',
+      key: 'id',
+    },
+    {
+      title: '机构ID',
+      dataIndex: 'orgId',
+      valueType: 'text',
+      key: 'orgid',
     },
     {
       title: '活动名称',
-      align: 'center',
       dataIndex: 'name',
       valueType: 'text',
       key: 'name',
     },
     {
-      title: '地点',
+      title: '活动省份',
+      dataIndex: 'provinceName',
       valueType: 'text',
-      key: 'address',
-      render: (_, record) => [
-        <div>{record.provinceName+record.cityName+record.countyName}</div>
-      ]
+      key: 'provinceName',
     },
-    // {
-    //   title: '活动省份',
-    //   dataIndex: 'provinceName',
-    //   valueType: 'text',
-    //   key: 'provinceName',
-    // },
-    // {
-    //   title: '活动城市',
-    //   dataIndex: 'cityName',
-    //   valueType: 'text',
-    //   key: 'cityName',
-    // },
-    // {
-    //   title: '活动区县',
-    //   dataIndex: 'countyName',
-    //   valueType: 'text',
-    //   key: 'countyName',
-    // },
+    {
+      title: '活动城市',
+      dataIndex: 'cityName',
+      valueType: 'text',
+      key: 'cityName',
+    },
+    {
+      title: '活动区县',
+      dataIndex: 'countyName',
+      valueType: 'text',
+      key: 'countyName',
+    },
+    {
+      title: '活动内容',
+      dataIndex: 'detail',
+      valueType: 'option',
+      key: 'detail',
+      render: (_, detail) => (
+        <div>
+          <a
+            onClick={() => {
+              DetailInfo(detail);
+            }}
+          >
+          活动内容
+        </a>
+        </div>
+      ),
+    },
+    {
+      title: '行程安排',
+      dataIndex: 'arrangement',
+      valueType: 'option',
+      key: 'arrangement',
+      render: (_, arrangement) => (
+        <div>
+          <a
+            onClick={() => {
+              ArrangementInfo(arrangement);
+            }}
+          >
+          行程安排
+        </a>
+        </div>
+      ),
+    },
+    {
+      title: '注意事项',
+      dataIndex: 'matter',
+      valueType: 'text',
+      key: 'matter',
+      render: (_, matter) => (
+        <div>
+          <a
+            onClick={() => {
+              MatterInfo(matter);
+            }}
+          >
+          注意事项
+        </a>
+        </div>
+      ),
+    },
     {
       title: '标签',
       dataIndex: 'label',
-      filters: true,
       valueType: 'text',
       key: 'label',
       valueEnum: {
@@ -275,7 +309,6 @@ const index = props => {
     {
       title: '分类',
       dataIndex: 'subject',
-      filters: true,
       valueType: 'text',
       key: 'subject',
       valueEnum: {
@@ -294,7 +327,6 @@ const index = props => {
       title: '活动类型',
       dataIndex: 'type',
       valueType: 'text',
-      filters: true,
       key: 'type',
       valueEnum: {
         0: {
@@ -340,7 +372,7 @@ const index = props => {
         <div>
           <a
             onClick={() => {
-              RealNameActivity(record);
+              updateStatus(record);
             }}
           >
             审核
@@ -350,9 +382,40 @@ const index = props => {
     },
   ];
 
-  const RealNameActivity = (record) => {
-    localStorage.setItem("realNameRecord",JSON.stringify(record))
-    history.push("/admin/activity/realname")
+  function DetailInfo(item) {
+    Modal.info({
+      title: '简介',
+      width: "1100px",
+      content: (
+        <div dangerouslySetInnerHTML={{ __html: item.detail }}></div>
+      )
+    })
+  }
+  function ArrangementInfo(item) {
+    Modal.info({
+      title: '行程安排',
+      width: "1100px",
+      content: (
+        <div dangerouslySetInnerHTML={{ __html: item.arrangement }}></div>
+      )
+    })
+  }
+  function MatterInfo(item) {
+    Modal.info({
+      title: '注意事项',
+      width: "1100px",
+      content: (
+        <div dangerouslySetInnerHTML={{ __html: item.matter }}></div>
+      )
+    })
+  }
+
+  const updateStatus = (record) => {
+    setModalVisible(true);
+    setRecord(record);
+  };
+  const closeHandle = () => {
+    setModalVisible(false);
   };
   const onFinish = async (params) => {
     let isRealnameNumber;
@@ -429,8 +492,8 @@ const index = props => {
           search={false}
           headerTitle="审核机构列表"
           pagination={{
-            defaultPageSize: 10,
-            pageSizeOptions: [10, 20, 50, 100]
+            defaultPageSize: 5,
+            pageSizeOptions: [5, 10, 20, 50, 100]
           }}
           options={{
             density: false,
@@ -441,7 +504,8 @@ const index = props => {
             setting: false,
           }}
           toolBarRender={() => [
-            <Input.Group key="IG">
+
+            <Input.Group >
               <Search
                 placeholder="搜索机构ID"
                 onSearch={(value) => searchOrgIdHandle(value)}
@@ -456,10 +520,19 @@ const index = props => {
               </Select>
  */}
             </Input.Group>,
-            <Button key="Button" onClick={resetHandle}>查看全部信息</Button>
+            <Button onClick={resetHandle}>查看全部信息</Button>,
           ]}
         />
+
       </PageContainer>
+
+      <AdminActivityRealnameList
+        visible={modalVisible}
+        closeHandle={closeHandle}
+        record={record}
+        onFinish={onFinish}
+        confirmLoading={confirmLoading}
+      />
     </div>
 
   )

@@ -1,53 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Form, Image, Card, List, Button, message, Tooltip, Tabs, Collapse } from "antd";
+import { Modal, Form, Image, Card, List, Button, message, Tooltip } from "antd";
 import { connect, history } from 'umi';
 import moment from 'moment';
 import { RollbackOutlined, SnippetsOutlined, PayCircleOutlined, ZoomInOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
 import styles from '../../style.less';
 import AddActivityItem from './AddActivityItem';
-import './index.less'
 import { addItem } from '../../service';
-import OrderItem from '../../../../OrderItem'
 const { confirm } = Modal;
-const { Panel } = Collapse;
-const { TabPane } = Tabs;
 
-const Activity = (props) => {
-  const { record } = props;
-  return (
-    <Card>
-      <Collapse ghost>
-        <Panel header="查看活动详细信息" key="1">
-          <div className="ClassDetail">
-            <div className="class_message">
-              <div className="class_message-detail">
-                <div>课程名称：{record.name}</div>
-                <div>举办城市：{record.provinceName + record.cityName + record.countyName}</div>
-                <div>课程类型：{record.labelName + ' | ' + record.subjectName}</div>
-              </div>
-            </div>
-          </div>
-          <div className="class_detail">
-            <div className="class_detail-tabs">
-              <Tabs defaultActiveKey="1">
-                <TabPane tab="课程简介" key="1" className="class_detail-tabpane">
-                  <div dangerouslySetInnerHTML={{ __html: record.detail }}></div>
-                </TabPane>
-                <TabPane tab="课程安排" key="2" className="class_detail-tabpane">
-                  <div dangerouslySetInnerHTML={{ __html: record.arrangement }}></div>
-                </TabPane>
-                <TabPane tab="注意事项" key="3" className="class_detail-tabpane">
-                  <div dangerouslySetInnerHTML={{ __html: record.matter }}></div>
-                </TabPane>
-              </Tabs>
-            </div>
-          </div>
-        </Panel>
-      </Collapse>
-    </Card>
-  )
-}
 
 const GetItemActivity = (props) => {
   const {
@@ -175,7 +136,6 @@ const GetItemActivity = (props) => {
 
   return (
     <>
-      <Activity record={Itemmessage} />
       <Card
         style={{
           marginTop: 24,
@@ -227,17 +187,16 @@ const GetItemActivity = (props) => {
               />
               <div className={styles.listContent}>
                 {/* <div className={styles.description} dangerouslySetInnerHTML={{ __html: item.detail }}></div> */}
+
+
                 <div className={styles.description}>
                   <Button type="primary" onClick={() => { DetailInfo(item) }}><ZoomInOutlined />活动描述</Button>
                   <Money value={item.price} />
-                  <OrderItem 
-                    itemNum={item.itemNum}
-                    sellNum={item.sellNum} 
-                    itemId = {item.id}
-                  />
+                  <strong style={{ "fontSize": "16px" }}>活动人数:{item.itemNum}人</strong>
+                  <strong style={{ "fontSize": "16px", "marginLeft": "20px" }}>已报名:{item.sellNum}人</strong><br />
+                  <Tooltip title="日程安排"><em>{moment(item.beginTime).format('YYYY-MM-DD HH:mm')}</em>&nbsp;~&nbsp;<em>{moment(item.endTime).format('YYYY-MM-DD HH:mm')}</em></Tooltip><br />
                 </div>
                 <div className={styles.extra}>
-                  <Tooltip title="日程安排"><em>{moment(item.beginTime).format('YYYY-MM-DD HH:mm')}</em>&nbsp;~&nbsp;<em>{moment(item.endTime).format('YYYY-MM-DD HH:mm')}</em></Tooltip><br />
                   发布机构:<a href="#">{item.orgName}</a>
                   创建于:<em>{moment(item.gmtCreate).format('YYYY-MM-DD HH:mm')}</em>
                 </div>

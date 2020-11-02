@@ -8,15 +8,6 @@ export async function getDescribe(params) {
     body: JSON.stringify(params.payload),
   });
 }
-
-// 查看活动实体列表
-export async function getItemActivityList(params) {
-  return request(`/orgservice/org-item/getItemList/1/250`, {
-    method: 'POST',
-    body: JSON.stringify(params.payload),
-  });
-}
-
 //添加活动
 export async function addActivity(params) {
   return request(`/orgservice/org-activity-realname/auth/addActivityRealname`, {
@@ -27,7 +18,7 @@ export async function addActivity(params) {
 //修改活动
 export async function updateActivity(params) {
   return request(`/orgservice/org-activity/auth/updateActivity`, {
-    method: 'POST',
+    method: 'PUT',
     body: JSON.stringify(params),
   });
 }
@@ -39,10 +30,26 @@ export async function deleteActivity(params) {
   });
 }
 
+
+// 查看活动实体列表
+export async function getItemActivityList(params) {
+  return request(`/orgservice/org-item/getItemList/1/250`, {
+    method: 'POST',
+    body: JSON.stringify(params.payload),
+  });
+}
+
 //增加活动实体
 export async function addItem(params) {
   return request(`/orgservice/org-item/addItem`, {
     method: 'POST',
+    body: JSON.stringify(params),
+  });
+}
+//修改活动实体
+export async function updateItem(params) {
+  return request(`/orgservice/org-item/updateItem`, {
+    method: 'PUT',
     body: JSON.stringify(params),
   });
 }

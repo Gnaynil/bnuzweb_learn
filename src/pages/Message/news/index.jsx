@@ -1,222 +1,155 @@
-import {
-  DownloadOutlined,
-  EditOutlined,
-  EllipsisOutlined,
-  ShareAltOutlined,
-} from '@ant-design/icons';
-import { Avatar, Card, Col, Dropdown, List, Menu, Row, Select, Tooltip, Form } from 'antd';
 import React, { useEffect } from 'react';
-import { connect } from 'umi';
-import numeral from 'numeral';
-import StandardFormRow from './components/StandardFormRow';
-import TagSelect from './components/TagSelect';
+import moment from 'moment';
+import { connect, history } from 'umi';
+import { Card, List, Image, Tooltip, Typography, Modal, Input, Button } from 'antd';
+import {
+  EditOutlined,
+  DeleteOutlined,
+  ExclamationCircleOutlined,
+  PlusOutlined
+} from '@ant-design/icons';
 import styles from './style.less';
-const { Option } = Select;
-export function formatWan(val) {
-  const v = val * 1;
-  if (!v || Number.isNaN(v)) return '';
-  let result = val;
+const { Paragraph } = Typography;
+const { confirm } = Modal;
+import ProTable from '@ant-design/pro-table';
+const { Search } = Input;
 
-  if (val > 10000) {
-    result = (
-      <span>
-        {Math.floor(val / 10000)}
-        <span
-          style={{
-            position: 'relative',
-            top: -2,
-            fontSize: 14,
-            fontStyle: 'normal',
-            marginLeft: 2,
-          }}
-        >
-          万
-        </span>
-      </span>
-    );
-  }
-
-  return result;
-}
-const formItemLayout = {
-  wrapperCol: {
-    xs: {
-      span: 24,
-    },
-    sm: {
-      span: 16,
-    },
-  },
-};
-
-const CardInfo = ({ activeUser, newUser }) => (
-  <div className={styles.cardInfo}>
-    <div>
-      <p>活跃用户</p>
-      <p>{activeUser}</p>
-    </div>
-    <div>
-      <p>新增用户</p>
-      <p>{newUser}</p>
-    </div>
-  </div>
-);
-
-export const Applications = (props) => {
+const listNews = (props) => {
   const {
     dispatch,
     loading,
-    listAndsearchAndapplications: { list },
+    listNews: { listNews },
   } = props;
   useEffect(() => {
     dispatch({
-      type: 'listAndsearchAndapplications/fetch',
+      type: 'listNews/fetch',
       payload: {
-        count: 8,
+
       },
     });
   }, [1]);
+  const columns = [
+    {
+      title: '标题',
+      align: 'center',
+      dataIndex: 'title',
+      valueType: 'text',
+      key: 'title',
+    },
+    {
+      title: '封面',
+      dataIndex: 'cover',
+      valueType: 'text',
+      key: 'cover',
+      render: (text) => <Image width={100} src={text} placeholder={<Image width={100} src={`${text}?x-oss-process=image/blur,r_50,s_50/quality,q_1/resize,m_mfit,h_200,w_200`} />} fallback="data:image/png;base64,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" />
+    },
+    {
+      title: '内容',
+      align: 'center',
+      dataIndex: 'content',
+      valueType: 'text',
+      key: 'content',
+      render: (text) => {
+        let subStr = text.slice(0, 200);
+        subStr = subStr + (text.length > 200 ? "..." : "");
+        return (
+          <div dangerouslySetInnerHTML={{ __html: subStr }}></div>
+        )
+      }
+    },
+    {
+      title: '操作',
+      align: 'center',
+      dataIndex: 'option',
+      valueType: 'option',
+      render: (_, record) => [
+        <Tooltip key="edit" title="编辑" onClick={() => EditHandle(record)}>
+          <EditOutlined />
+        </Tooltip>,
+        <Tooltip key="download" title="删除" onClick={() => DeleteHandle(reord.id)}>
+          <DeleteOutlined />
+        </Tooltip>
+      ]
+    },
+  ];
 
-  const handleValuesChange = () => {
-    dispatch({
-      type: 'listAndsearchAndapplications/fetch',
-      payload: {
-        count: 8,
+  const EditHandle = (item) => {
+    localStorage.setItem("ItemNews", JSON.stringify(item));
+    history.push("/update_news");
+  }
+  const DeleteHandle = (id) => {
+    confirm({
+      title: '确认删除该新闻吗?',
+      icon: <ExclamationCircleOutlined />,
+      okText: '确认',
+      okType: 'danger',
+      cancelText: '返回',
+      onOk() {
+        dispatch({
+          type: 'listNews/delete',
+          payload: {
+
+          },
+          id: id,
+        });
       },
     });
-  };
+  }
+  const searchTitleHandle = (value) => {
+    dispatch({
+      type: 'listNews/fetch',
+      payload: {
+        title: value
+      },
+    });
+  }
+  const AddNews = ()=>{
+    history.push('/publish_news');
+  }
 
-  const itemMenu = (
-    <Menu>
-      <Menu.Item>
-        <a target="_blank" rel="noopener noreferrer" href="https://www.alipay.com/">
-          1st menu item
-        </a>
-      </Menu.Item>
-      <Menu.Item>
-        <a target="_blank" rel="noopener noreferrer" href="https://www.taobao.com/">
-          2nd menu item
-        </a>
-      </Menu.Item>
-      <Menu.Item>
-        <a target="_blank" rel="noopener noreferrer" href="https://www.tmall.com/">
-          3d menu item
-        </a>
-      </Menu.Item>
-    </Menu>
-  );
   return (
-    <div className={styles.filterCardList}>
-      <Card bordered={false}>
-        <Form onValuesChange={handleValuesChange}>
-          <StandardFormRow
-            title="所属类目"
-            block
-            style={{
-              paddingBottom: 11,
-            }}
-          >
-            <Form.Item name="category">
-              <TagSelect expandable>
-                <TagSelect.Option value="cat1">类目一</TagSelect.Option>
-                <TagSelect.Option value="cat2">类目二</TagSelect.Option>
-                <TagSelect.Option value="cat3">类目三</TagSelect.Option>
-                <TagSelect.Option value="cat4">类目四</TagSelect.Option>
-                <TagSelect.Option value="cat5">类目五</TagSelect.Option>
-                <TagSelect.Option value="cat6">类目六</TagSelect.Option>
-                <TagSelect.Option value="cat7">类目七</TagSelect.Option>
-                <TagSelect.Option value="cat8">类目八</TagSelect.Option>
-                <TagSelect.Option value="cat9">类目九</TagSelect.Option>
-                <TagSelect.Option value="cat10">类目十</TagSelect.Option>
-                <TagSelect.Option value="cat11">类目十一</TagSelect.Option>
-                <TagSelect.Option value="cat12">类目十二</TagSelect.Option>
-              </TagSelect>
-            </Form.Item>
-          </StandardFormRow>
-          <StandardFormRow title="其它选项" grid last>
-            <Row gutter={16}>
-              <Col lg={8} md={10} sm={10} xs={24}>
-                <Form.Item {...formItemLayout} name="author" label="作者">
-                  <Select
-                    placeholder="不限"
-                    style={{
-                      maxWidth: 200,
-                      width: '100%',
-                    }}
-                  >
-                    <Option value="lisa">王昭君</Option>
-                  </Select>
-                </Form.Item>
-              </Col>
-              <Col lg={8} md={10} sm={10} xs={24}>
-                <Form.Item {...formItemLayout} name="rate" label="好评度">
-                  <Select
-                    placeholder="不限"
-                    style={{
-                      maxWidth: 200,
-                      width: '100%',
-                    }}
-                  >
-                    <Option value="good">优秀</Option>
-                    <Option value="normal">普通</Option>
-                  </Select>
-                </Form.Item>
-              </Col>
-            </Row>
-          </StandardFormRow>
-        </Form>
-      </Card>
-      <br />
-      <List
+    <div>
+      <ProTable
+        columns={columns}
+        dataSource={listNews}
         rowKey="id"
-        grid={{
-          gutter: 16,
-          xs: 1,
-          sm: 2,
-          md: 3,
-          lg: 3,
-          xl: 4,
-          xxl: 4,
-        }}
         loading={loading}
-        dataSource={list}
-        renderItem={(item) => (
-          <List.Item key={item.id}>
-            <Card
-              hoverable
-              bodyStyle={{
-                paddingBottom: 20,
-              }}
-              actions={[
-                <Tooltip key="download" title="下载">
-                  <DownloadOutlined />
-                </Tooltip>,
-                <Tooltip key="edit" title="编辑">
-                  <EditOutlined />
-                </Tooltip>,
-                <Tooltip title="分享" key="share">
-                  <ShareAltOutlined />
-                </Tooltip>,
-                <Dropdown key="ellipsis" overlay={itemMenu}>
-                  <EllipsisOutlined />
-                </Dropdown>,
-              ]}
-            >
-              <Card.Meta avatar={<Avatar size="small" src={item.avatar} />} title={item.title} />
-              <div className={styles.cardItemContent}>
-                <CardInfo
-                  activeUser={formatWan(item.activeUser)}
-                  newUser={numeral(item.newUser).format('0,0')}
-                />
-              </div>
-            </Card>
-          </List.Item>
-        )}
+        search={false}
+        headerTitle="新闻列表"
+        pagination={{
+          defaultPageSize: 10,
+          pageSizeOptions: [10, 20, 50, 100]
+        }}
+        options={{
+          density: false,
+          fullScreen: false,
+          // reload: () => {
+          //   resetHandle();
+          // },
+          reload: false,
+          setting: false,
+        }}
+        toolBarRender={() => [
+          <Input.Group key="IG">
+            <Search
+              placeholder="搜索标题"
+              onSearch={(value) => searchTitleHandle(value)}
+              style={{ width: 200 }}
+              allowClear
+            />
+          </Input.Group>,
+          <Button key="AN" type="primary" onClick={() => AddNews()}>
+            <PlusOutlined />发布新闻
+          </Button>
+        ]}
       />
     </div>
   );
 };
-export default connect(({ listAndsearchAndapplications, loading }) => ({
-  listAndsearchAndapplications,
-  loading: loading.models.listAndsearchAndapplications,
-}))(Applications);
+const mapStateToProps = ({ listNews, loading }) => {
+  return {
+    listNews,
+    loading: loading.models.AdminList,
+  }
+}
+export default connect(mapStateToProps)(listNews);

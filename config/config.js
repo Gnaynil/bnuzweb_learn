@@ -28,7 +28,6 @@ export default defineConfig({
     //   path:'/admin',
     //   component:'@/pages/ProfileAdvanced'
     // },
-
     {
       path: '/admin',
       component: '../layouts/SecurityLayout',
@@ -53,7 +52,10 @@ export default defineConfig({
               icon: 'smile',
               component: './Admin/Admin_activity_List',
             },
-
+            {
+              path: '/admin/activity/realname',
+              component: './Admin/Admin_activity_List/RealName.jsx',
+            },
             {
               component: './404',
             },
@@ -71,7 +73,7 @@ export default defineConfig({
           routes: [
             {
               path: '/',
-              redirect: '/welcome',
+              redirect: './message/subject',
             },
             {
               path: '/message',
@@ -108,42 +110,38 @@ export default defineConfig({
               component: './Message/subject/components/GetItemActivity',
             },
             {
+              path: '/update_activity_item',
+              component: './Message/subject/components/GetItemActivity/UpdateActivityItem.jsx',
+            },
+            {
               path: '/add_item',
-              component: './Message/subject/components/AddActivity'
+              component: './Message/subject/components/AddActivity',
             },
             {
               path: '/update_item',
-              component: './Message/subject/components/UpdateActivity'
+              component: './Message/subject/components/UpdateActivity',
             },
             {
-              path: '/welcome',
-              name: 'home',
-              icon: 'smile',
-              component: './Welcome',
+              path: '/update_news',
+              component: './Message/news/components/EditNews',
             },
             {
-              name: 'change.message',
+              path: '/my_info',
+              name: 'info',
               icon: 'smile',
-              path: '/changemessage',
-              component: './ChangeMessage',
+              component: './OrgUserInfo',
             },
-            // {
-            //   name: 'subject',
-            //   icon: 'smile',
-            //   path: '/subject',
-            //   component: './Subject',
-            // },
-            // {
-            //   name: 'travel',
-            //   icon: 'smile',
-            //   path: '/travel',
-            //   component: './Travel',
-            // },
             {
-              name: 'announcement',
+              name: 'PublishNews',
               icon: 'smile',
-              path: '/announcement',
-              component: './PublishAnnouncement',
+              path: '/publish_news',
+              component: './PublishNews',
+            },
+            {
+              name: 'CoverList',
+              icon: 'smile',
+              path: '/index_cover',
+              component: './OrgIndexCover',
             },
             {
               path: '/realname',
@@ -162,9 +160,8 @@ export default defineConfig({
                   path: '/realname/userlist',
                   component: './RealName/UserList',
                 },
-              ]
+              ],
             },
-
             {
               component: './404',
             },

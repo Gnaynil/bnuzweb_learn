@@ -1,31 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Modal, Card, Col, Form, List, Row, Select, Tag, Image, message, Popconfirm, Avatar, Alert } from 'antd';
+import { Button, Modal, Card, Col, Form, List, Row, Input, Tag, Image, message, Popconfirm, Avatar, Alert } from 'antd';
 import moment from 'moment';
-import { PlusOutlined, SnippetsOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { PlusOutlined, SnippetsOutlined, ExclamationCircleOutlined, ZoomInOutlined } from '@ant-design/icons';
 import { connect, history } from 'umi';
-import StandardFormRow from './components/StandardFormRow';
-import TagSelect from './components/TagSelect';
 import styles from './style.less';
-import AddActivity from './components/AddActivity';
 import GetActivityRealnameList from './components/GetActivityRealnameList';
-import { addActivity } from './service';
+import { PageContainer } from '@ant-design/pro-layout';
+import ProTable from '@ant-design/pro-table';
 const { confirm } = Modal;
-
+const { Search } = Input;
 const Subject = (props) => {
   const {
     loading,
     dispatch,
-    listTravel: { listTravel, meta, regionList, labelList, subjectList },
+    visible,
+    listTravel: { listTravel, meta },
     HomeList: { user }
 
   } = props;
+  localStorage.setItem("listTravelRecord",JSON.stringify(listTravel));
 
   //获取用户头像
   let avatar;
   let orgId;
   if (user.user) {
     avatar = user.user.avatar
-    orgId = user.user.orgId
+    orgId = user.user.id
   }
 
 
@@ -38,10 +38,10 @@ const Subject = (props) => {
       },
       current: meta.current,
       limit: meta.limit
-    });
-    dispatch({
-      type: 'HomeList/get',
-    });
+    }, [visible]);
+    // dispatch({
+    //   type: 'HomeList/get',
+    // });
     dispatch({
       type: 'listTravel/getRegion',
       //查询条件
@@ -64,67 +64,109 @@ const Subject = (props) => {
       }
     });
   }, []);
+  const columns = [
+    {
+      title: '活动名',
+      align: 'center',
+      dataIndex: 'name',
+      valueType: 'text',
+      key: 'id',
+    },
+    {
+      title: '地点',
+      valueType: 'text',
+      align: 'center',
+      key: 'address',
+      render: (_, record) => [
+        <div>{record.provinceName+record.cityName+record.countyName}</div>
+      ]
+    },
+    {
+      title: '标签',
+      dataIndex: 'label',
+      filters: true,
+      valueType: 'text',
+      key: 'label',
+      valueEnum: {
+        1: {
+          text: '古典',
+        },
+        2: {
+          text: '现代',
+        },
+        4: {
+          text: '好好学习',
+        },
+        5: {
+          text: '科技',
+        },
+      },
+    },
+    {
+      title: '分类',
+      dataIndex: 'subject',
+      filters: true,
+      valueType: 'text',
+      key: 'subject',
+      valueEnum: {
+        1: {
+          text: '游学',
+        },
+        2: {
+          text: '参观',
+        },
+        3: {
+          text: '体验',
+        },
+      },
+    },
+    {
+      title: '操作',
+      align: 'center',
+      dataIndex: 'option',
+      valueType: 'option',
+      render: (_, record) => [
+        <Button key="GA" type="primary" onClick={() => GetItemActivity(record)}>查看活动列表</Button>,
+        <Button key="UA" style={{ marginLeft: "5px", backgroundColor: "#FBFF2B" }} onClick={() => UpdateItemActivity(record)}>修改活动</Button>,
+        <Button key="DA" type="primary" danger style={{ marginLeft: "5px" }} onClick={() => DeleteItemActivity(record.id)}>删除</Button>
+      ]
+    },
+  ];
 
-  const [modalVisible, setModalVisible] = useState(false);
+
+  function DetailInfo(item) {
+    Modal.info({
+      title: '简介',
+      width: "1100px",
+      content: (
+        <div dangerouslySetInnerHTML={{ __html: item.detail }}></div>
+      )
+    })
+  }
+  function ArrangementInfo(item) {
+    Modal.info({
+      title: '行程安排',
+      width: "1100px",
+      content: (
+        <div dangerouslySetInnerHTML={{ __html: item.arrangement }}></div>
+      )
+    })
+  }
+  function MatterInfo(item) {
+    Modal.info({
+      title: '注意事项',
+      width: "1100px",
+      content: (
+        <div dangerouslySetInnerHTML={{ __html: item.matter }}></div>
+      )
+    })
+  }
+
+
   const [modalGetVisible, setModalGetVisible] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [form] = Form.useForm();
-  // let region;
-  // if (regionList) {
-  //   region=regionList
-  // }
-  // let label;
-  // if (labelList) {
-  //   label=labelList
-  // }
 
-  // const formItemLayout = {
-  //   wrapperCol: {
-  //     xs: {
-  //       span: 24,
-  //     },
-  //     sm: {
-  //       span: 24,
-  //     },
-  //     md: {
-  //       span: 12,
-  //     },
-  //   },
-  // };
-
-  //添加活动的Modal
-  const closeHandle = () => {
-    setModalVisible(false);
-  };
-  const onFinish = async (params) => {
-    console.log(params);
-    params.provinceId = params.address[0];
-    params.cityId = params.address[1];
-    params.countyId = params.address[2];
-    delete params.address;
-
-    setConfirmLoading(true);
-    const result = await addActivity({
-      ...params,
-    });
-
-    if (result) {
-      setModalVisible(false);
-      message.success('添加成功');
-
-      //刷新查看活动审核情况
-      dispatch({
-        type: 'listTravel/getRealname',
-        //查询条件
-        payload: {
-          orgId: orgId,
-          type: 0
-        }
-      });
-      resetHandle();
-      setConfirmLoading(false);
-    }
-  }
 
   //刷新活动列表
   const resetHandle = () => {
@@ -139,8 +181,14 @@ const Subject = (props) => {
     });
   }
 
-  const AddItemActivity = () => {
-    setModalVisible(true)
+  //添加活动
+  const AddItemActivity = (item) => {
+
+    history.push("/add_item");
+  }
+  const UpdateItemActivity = (item) => {
+    localStorage.setItem("ItemMessage", JSON.stringify(item));
+    history.push("/update_item");
   }
 
   //查看审核列表的Modal
@@ -156,9 +204,9 @@ const Subject = (props) => {
     confirm({
       title: '确认删除该活动吗?',
       icon: <ExclamationCircleOutlined />,
-      okText: 'Yes',
+      okText: '确认',
       okType: 'danger',
-      cancelText: 'No',
+      cancelText: '返回',
       onOk() {
         setConfirmLoading(true);
         dispatch({
@@ -178,93 +226,60 @@ const Subject = (props) => {
   const closeGetHandle = () => {
     setModalGetVisible(false);
   };
-
-
+  const searchActivityHandle = (value) => {
+    console.log(value);
+    dispatch({
+      type: 'listTravel/fetch',
+      //查询条件
+      payload: {
+        type: 0,
+        name: value
+      },
+      current: meta.current,
+      limit: meta.limit
+    });
+  }
 
   return (
     <>
-
-      {      <Card
-        style={{
-          marginTop: 24,
+      <ProTable
+        columns={columns}
+        dataSource={listTravel}
+        rowKey="id"
+        loading={loading}
+        search={false}
+        headerTitle="活动列表"
+        pagination={{
+          defaultPageSize: 10,
+          pageSizeOptions: [10, 20, 50, 100]
         }}
-        title="活动列表"
-        bordered={false}
-        bodyStyle={{
-          padding: '8px 32px 32px 32px',
+        options={{
+          density: false,
+          fullScreen: false,
+          // reload: () => {
+          //   resetHandle();
+          // },
+          reload: false,
+          setting: false,
         }}
-        extra={
-          <div>
-            <Button type="primary" onClick={AddItemActivity}>
-              <PlusOutlined />新建活动
-            </Button>
-            <Button type="primary" onClick={GetItemRealnameActivity} style={{ marginLeft: 30 }}>
-              <SnippetsOutlined />查看活动审核情况
-            </Button>
-          </div>
-
-        }
-      >
-        {<List
-          size="large"
-          loading={loading}
-          rowKey="id"
-          itemLayout="vertical"
-          // loadMore={loadMore}
-          dataSource={listTravel}
-          pagination={{
-            pageSize: 10
-          }}
-          renderItem={(item) => (
-            <List.Item
-              key={item.id}
-              extra={
-                <div>
-                  <Button type="primary" className={styles.listItemButton} onClick={() => GetItemActivity(item)}>查看活动实体列表</Button>
-                  <Button type="primary" danger className={styles.listItemButton} style={{ marginLeft: "15px" }} onClick={() => DeleteItemActivity(item.id)}>删除</Button>
-                </div>
-              }
-            >
-              <List.Item.Meta
-                description={
-                  <div>
-                    标签:<span>
-                      <Tag color="magenta" >{item.labelName}</Tag>
-                    </span>
-                    分类:<span>
-                      <Tag color="volcano" >{item.subjectName}</Tag>
-                    </span>
-                  </div>
-                }
-                title={item.name}
-              />
-              <div className={styles.listContent}>
-                <div className={styles.description}>
-                  <Tag color="#108ee9">{item.provinceName}</Tag>
-                  <Tag color="#108ee9">{item.cityName}</Tag>
-                  <Tag color="#108ee9">{item.countyName}</Tag><br />
-                </div>
-                <div className={styles.extra}>
-                  <Avatar src={avatar} size="small" />
-                发布机构:<a href="#">{item.busName}</a>
-                创建于:<em>{moment(item.gmtCreate).format('YYYY-MM-DD HH:mm')}</em>
-                </div>
-
-              </div>
-            </List.Item>
-          )}
-        />}
-      </Card>}
-      <AddActivity
-        visible={modalVisible}
-        closeHandle={closeHandle}
-        onFinish={onFinish}
-        confirmLoading={confirmLoading}
-        address={regionList}
-        label={labelList}
-        subject={subjectList}
-      >
-      </AddActivity>
+        toolBarRender={() => [
+          <Input.Group key="IG">
+            <Search
+              placeholder="搜索活动"
+              onSearch={(value) => searchActivityHandle(value)}
+              style={{ width: 200 }}
+              allowClear
+            />
+          </Input.Group>,
+          // <Button key="Button" onClick={resetHandle}>查看全部信息</Button>,
+          <Button key="ATA" type="primary" onClick={() => AddItemActivity()}>
+            <PlusOutlined />新建活动
+          </Button>,
+          <Button key="GRA" type="primary" onClick={GetItemRealnameActivity}>
+            <SnippetsOutlined />查看活动审核情况
+          </Button>
+        ]}
+      />
       <GetActivityRealnameList
         visible={modalGetVisible}
         closeHandle={closeGetHandle}

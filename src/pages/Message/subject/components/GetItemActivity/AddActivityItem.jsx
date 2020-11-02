@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { message, Modal, Form, Select, Input, Upload, Button, DatePicker, InputNumber } from "antd";
+import { message, Modal, Form, Input, Upload, Button, DatePicker, InputNumber } from "antd";
 import { UploadOutlined } from '@ant-design/icons';
 import 'braft-editor/dist/index.css'
 import BraftEditor from 'braft-editor'
@@ -67,40 +67,59 @@ const CreateForm = (props) => {
     form.resetFields();
     setfileUpload([])
   }
+  //富文本上传媒体
+  const [editorState, SetEditorState] = useState(BraftEditor.createEditorState());
+  const [editorModalVisible, setEditorModalVisible] = useState(false);
+  const editorHandleChange = (value) => {
+    SetEditorState(value);
+  }
+  const preview = () => {
+    setEditorModalVisible(true)
+  }
+
+  const extendControls = [
+    {
+      key: 'custom-button',
+      type: 'button',
+      title: "全屏下不可预览",
+      text: '预览',
+      onClick: preview
+    }
+  ]
 
   const myUploadFn = (param) => {
     const serverURL = 'http://119.29.92.83:8003/ossservice/v1/auth/file/upload'
     const xhr = new XMLHttpRequest
     const fd = new FormData()
-  
+
     const successFn = (response) => {
       // 假设服务端直接返回文件上传后的地址
       // 上传成功后调用param.success并传入上传后的文件地址
       const jsonText = xhr.responseText;
-      console.log(JSON.parse(jsonText));
+      // console.log(JSON.parse(jsonText));
       param.success({
         url: JSON.parse(jsonText).data.url
 
       })
     }
-  
+
     const progressFn = (event) => {
       // 上传进度发生变化时调用param.progress
       param.progress(event.loaded / event.total * 100)
     }
-  
+
     const errorFn = (response) => {
       // 上传发生错误时调用param.error
       param.error({
         msg: 'unable to upload.'
       })
     }
-  
+
     xhr.upload.addEventListener("progress", progressFn, false)
     xhr.addEventListener("load", successFn, false)
     xhr.addEventListener("error", errorFn, false)
     xhr.addEventListener("abort", errorFn, false)
-  
+
     fd.append('file', param.file)
     xhr.open('POST', serverURL, true)
     xhr.send(fd)
@@ -285,20 +304,31 @@ const CreateForm = (props) => {
             name="detail"
           >
             <BraftEditor
+              onChange={editorHandleChange}
               className="my-editor"
-              // excludeControls="media"
               media={{
-                accepts:{
-                  video:false,
-                  audio:false,
+                accepts: {
+                  video: false,
+                  audio: false,
                 },
                 uploadFn: myUploadFn
               }}
+              extendControls={extendControls}
               placeholder="请输入正文内容"
             />
           </Form.Item>
 
         </Form>
+      </Modal>
+      <Modal
+        title="内容"
+        forceRender
+        visible={editorModalVisible}
+        onOk={() => { setEditorModalVisible(false) }}
+        onCancel={() => { setEditorModalVisible(false) }}
+        width={1100}
+      >
+        <div dangerouslySetInnerHTML={{ __html: editorState.toHTML() }}></div>
       </Modal>
     </div>
   );

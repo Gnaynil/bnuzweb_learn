@@ -57,13 +57,13 @@ export default {
   'menu.subject': '发布课题',
   'menu.travel': '发布旅游',
   'menu.analysis': '数据分析',
-  'menu.announcement': '发布公告',
+  'menu.PublishNews': '发布新闻',
   'menu.news': '发布新闻',
   'menu.listbasiclist': '标准列表',
   'menu.高级表单': '高级表单',
   'menu.realname': '机构信息',
   'menu.realname.orgrealname': '机构信息审核',
-  'menu.realname.userlist': '机构信息查看',
+  'menu.realname.userlist': '审核信息查看',
   'menu.listtablelist': '查询列表',
   'menu.admin.org.realname.list': '机构审核',
   'menu.admin.org.activity.list': '活动审核',
@@ -72,5 +72,7 @@ export default {
   'menu.message-list.subject.item-list': '活动实体列表',
   'menu.message-list.travel': '旅游',
   'menu.message-list.news': '新闻',
+  'menu.info':"我的信息",
+  'menu.CoverList':"首页轮播图"
 
 };

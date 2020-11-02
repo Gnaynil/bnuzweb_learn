@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { message, Form, Select, Input, Cascader, Button, Card } from "antd";
-import { UploadOutlined } from '@ant-design/icons';
+import { message, Form, Select, Input, Cascader, Button, Card, Modal } from "antd";
 import { connect } from 'umi';
 import { PageContainer } from '@ant-design/pro-layout';
 import { updateActivity } from '../../service';
 import 'braft-editor/dist/index.css'
+
 import BraftEditor from 'braft-editor'
 
 
@@ -47,24 +47,47 @@ const UpdateActivity = (props) => {
   const [form] = Form.useForm();
   const submitFormLayout = {
     wrapperCol: {
-      xs: {
-        span: 24,
-        offset: 0,
-      },
       sm: {
-        span: 10,
-        offset: 7,
+        span: 0,
+        offset: 4
       },
+      xl: {
+        span: 4,
+        offset: 6
+      },
+      xxl: {
+        span: 4,
+        offset: 11
+      }
     },
   };
   const formLayout = {
     labelCol: {
-      span: 7,
+      sm: {
+        span: 0,
+        offset: 0
+      },
+      xl: {
+        span: 2,
+        offset: 1
+      },
+      xxl: {
+        span: 4,
+        offset: 4
+      }
     },
     wrapperCol: {
-      span: 13,
+      sm: {
+        span: 2,
+        offset: 0
+      },
+      xl: {
+        span: 5,
+        offset: 0
+      }
     },
   };
+
 
   //分类列表*
   const subList = [];
@@ -150,6 +173,61 @@ const UpdateActivity = (props) => {
   //*
 
   //富文本上传媒体
+  const [editorDetailState, SetEditorDetailState] = useState(BraftEditor.createEditorState(formValue.detail));
+  const [editorDetailModalVisible, setEditorDetailModalVisible] = useState(false);
+  const [editorArrangementState, SetEditorArrangementState] = useState(BraftEditor.createEditorState(formValue.arrangement));
+  const [editorArrangementModalVisible, setEditorArrangementModalVisible] = useState(false);
+
+  const [editorMatterState, SetEditorMatterState] = useState(BraftEditor.createEditorState(formValue.matter));
+  const [editorMatterModalVisible, setEditorMatterModalVisible] = useState(false);
+
+  const editorDetailHandleChange = (value) => {
+    SetEditorDetailState(value);
+  }
+  const editorArrangementHandleChange = (value) => {
+    SetEditorArrangementState(value);
+  }
+  const editorMatterHandleChange = (value) => {
+    SetEditorMatterState(value);
+  }
+
+  const previewDetail = () => {
+    setEditorDetailModalVisible(true)
+  }
+  const previewArrangement = () => {
+    setEditorArrangementModalVisible(true)
+  }
+  const previewMatter = () => {
+    setEditorMatterModalVisible(true)
+  }
+
+  const extendDetailControls = [
+    {
+      key: 'custom-button',
+      type: 'button',
+      title: "全屏下不可预览",
+      text: '预览',
+      onClick: previewDetail
+    }
+  ]
+  const extendArrangementControls = [
+    {
+      key: 'custom-button',
+      type: 'button',
+      title: "全屏下不可预览",
+      text: '预览',
+      onClick: previewArrangement
+    }
+  ]
+  const extendMatterControls = [
+    {
+      key: 'custom-button',
+      type: 'button',
+      title: "全屏下不可预览",
+      text: '预览',
+      onClick: previewMatter
+    }
+  ]
   const myUploadFn = (param) => {
     const serverURL = 'http://119.29.92.83:8003/ossservice/v1/auth/file/upload'
     const xhr = new XMLHttpRequest
@@ -229,7 +307,7 @@ const UpdateActivity = (props) => {
           <Button type="primary" onClick={BackToSubject}>返回上一页</Button>
         </div>
       }>
-      <Card bordered={false}>
+      <Card bordered={false} style={{ minWidth: 1500 }}>
         <Form
           {...formLayout}
           name="basic"
@@ -245,6 +323,19 @@ const UpdateActivity = (props) => {
 
           }}
         >
+          <Form.Item
+            label="机构Id"
+            name="id"
+            hidden
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="机构名称"
+            name="busName"
+          >
+            <Input />
+          </Form.Item>
           <Form.Item
             label="活动名"
             name="name"
@@ -323,6 +414,8 @@ const UpdateActivity = (props) => {
             ]}
           >
             <BraftEditor
+              style={{ width: 800 }}
+              onChange={editorDetailHandleChange}
               className="my-editor"
               media={{
                 accepts: {
@@ -331,6 +424,7 @@ const UpdateActivity = (props) => {
                 },
                 uploadFn: myUploadFn
               }}
+              extendControls={extendDetailControls}
               placeholder="请输入正文内容"
             />
           </Form.Item>
@@ -346,6 +440,8 @@ const UpdateActivity = (props) => {
 
           >
             <BraftEditor
+              style={{ width: 800 }}
+              onChange={editorArrangementHandleChange}
               className="my-editor"
               media={{
                 accepts: {
@@ -354,6 +450,7 @@ const UpdateActivity = (props) => {
                 },
                 uploadFn: myUploadFn
               }}
+              extendControls={extendArrangementControls}
               placeholder="请输入正文内容"
             />
           </Form.Item>
@@ -369,6 +466,8 @@ const UpdateActivity = (props) => {
 
           >
             <BraftEditor
+              style={{ width: 800 }}
+              onChange={editorMatterHandleChange}
               className="my-editor"
               media={{
                 accepts: {
@@ -377,6 +476,7 @@ const UpdateActivity = (props) => {
                 },
                 uploadFn: myUploadFn
               }}
+              extendControls={extendMatterControls}
               placeholder="请输入正文内容"
             />
           </Form.Item>
@@ -395,6 +495,36 @@ const UpdateActivity = (props) => {
           </Form.Item>
         </Form>
       </Card>
+      <Modal
+        title="内容"
+        forceRender
+        visible={editorDetailModalVisible}
+        onOk={() => { setEditorDetailModalVisible(false) }}
+        onCancel={() => { setEditorDetailModalVisible(false) }}
+        width={850}
+      >
+        <div dangerouslySetInnerHTML={{ __html: editorDetailState.toHTML() }}></div>
+      </Modal>
+      <Modal
+        title="行程安排"
+        forceRender
+        visible={editorArrangementModalVisible}
+        onOk={() => { setEditorArrangementModalVisible(false) }}
+        onCancel={() => { setEditorArrangementModalVisible(false) }}
+        width={850}
+      >
+        <div dangerouslySetInnerHTML={{ __html: editorArrangementState.toHTML() }}></div>
+      </Modal>
+      <Modal
+        title="注意事项"
+        forceRender
+        visible={editorMatterModalVisible}
+        onOk={() => { setEditorMatterModalVisible(false) }}
+        onCancel={() => { setEditorMatterModalVisible(false) }}
+        width={850}
+      >
+        <div dangerouslySetInnerHTML={{ __html: editorMatterState.toHTML() }}></div>
+      </Modal>
     </PageContainer>
   )
 }
