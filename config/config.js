@@ -30,7 +30,38 @@ export default defineConfig({
     // },
     {
       path: '/admin',
-      component: '@/pages/AdminList',
+      component: '../layouts/SecurityLayout',
+      routes: [
+        {
+          path: '/admin',
+          component: '../layouts/BasicLayout',
+          routes: [
+            {
+              path: '/admin',
+              redirect: '/admin/org',
+            },
+            {
+              path: '/admin/org',
+              name: 'admin.org.realname.list',
+              icon: 'smile',
+              component: './Admin/Admin_realname_List',
+            },
+            {
+              path: '/admin/activity',
+              name: 'admin.org.activity.list',
+              icon: 'smile',
+              component: './Admin/Admin_activity_List',
+            },
+            {
+              path: '/admin/activity/realname',
+              component: './Admin/Admin_activity_List/RealName.jsx',
+            },
+            {
+              component: './404',
+            },
+          ],
+        },
+      ],
     },
     {
       path: '/',
@@ -42,55 +73,94 @@ export default defineConfig({
           routes: [
             {
               path: '/',
-              redirect: '/welcome',
+              redirect: './message/subject',
             },
             {
-              path: '/welcome',
-              name: 'home',
+              path: '/message',
+              name: 'message-list',
               icon: 'smile',
-              component: './Welcome',
+              component: './Message',
+              routes: [
+                {
+                  path: '/message',
+                  redirect: './message/subject',
+                },
+                {
+                  name: 'subject',
+                  icon: 'smile',
+                  path: '/message/subject',
+                  component: './Message/subject',
+                },
+                {
+                  name: 'travel',
+                  icon: 'smile',
+                  path: '/message/travel',
+                  component: './Message/travel',
+                },
+                {
+                  name: 'news',
+                  icon: 'smile',
+                  path: '/message/news',
+                  component: './Message/news',
+                },
+              ],
             },
             {
-              name: 'change.message',
-              icon: 'smile',
-              path: '/changemessage',
-              component: './ChangeMessage',
+              path: '/itemlist',
+              component: './Message/subject/components/GetItemActivity',
             },
             {
-              name: 'subject',
-              icon: 'smile',
-              path: '/subject',
-              component: './Subject',
+              path: '/update_activity_item',
+              component: './Message/subject/components/GetItemActivity/UpdateActivityItem.jsx',
             },
             {
-              name: 'travel',
-              icon: 'smile',
-              path: '/travel',
-              component: './Travel',
+              path: '/add_item',
+              component: './Message/subject/components/AddActivity',
             },
             {
-              name: 'announcement',
-              icon: 'smile',
-              path: '/announcement',
-              component: './PublishAnnouncement',
+              path: '/update_item',
+              component: './Message/subject/components/UpdateActivity',
             },
             {
-              name: 'listbasiclist',
-              icon: 'smile',
-              path: '/listbasiclist',
-              component: './ListBasicList',
+              path: '/update_news',
+              component: './Message/news/components/EditNews',
             },
             {
-              name: 'orgrealname',
+              path: '/my_info',
+              name: 'info',
               icon: 'smile',
-              path: '/orgrealname',
-              component: './OrgRealName',
+              component: './OrgUserInfo',
             },
             {
-              name: 'listtablelist',
+              name: 'PublishNews',
               icon: 'smile',
-              path: '/listtablelist',
-              component: './ListTableList',
+              path: '/publish_news',
+              component: './PublishNews',
+            },
+            {
+              name: 'CoverList',
+              icon: 'smile',
+              path: '/index_cover',
+              component: './OrgIndexCover',
+            },
+            {
+              path: '/realname',
+              name: 'realname',
+              icon: 'smile',
+              routes: [
+                {
+                  name: 'orgrealname',
+                  icon: 'smile',
+                  path: '/realname/orgrealname',
+                  component: './RealName/OrgRealName',
+                },
+                {
+                  name: 'userlist',
+                  icon: 'smile',
+                  path: '/realname/userlist',
+                  component: './RealName/UserList',
+                },
+              ],
             },
             {
               component: './404',

@@ -2,11 +2,11 @@ import React from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import { Card, Alert, Typography } from 'antd';
 import styles from './Welcome.less';
-import List from './List';
 import HomeList from './HomeList';
+import OrgInfo from './OrgUserInfo';
 export default () => (
-  <PageContainer>
-    <Card>
+  <PageContainer title="我的信息">
+ {/*    <Card>
       <Alert
         message="更快更强的重型组件，已经发布。"
         type="success"
@@ -17,8 +17,9 @@ export default () => (
           marginBottom: 24,
         }}
       />
-    </Card>
-    <List />
-    <HomeList />
+    </Card> */}
+    {/* <HomeList /> */}
+    <OrgInfo/>
+    
   </PageContainer>
 );

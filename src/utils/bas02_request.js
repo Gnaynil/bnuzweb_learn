@@ -1,4 +1,4 @@
-import fetch from 'dva/fetch'
+import {fetch} from 'dva'
 
 const baseApi ="http://120.25.124.250:8002";
 
@@ -7,7 +7,7 @@ function parseJSON(response) {
 }
 
 function checkStatus(response) {
-  console.log(response, 'response')
+  // console.log(response, 'response')
   if (response.status >= 200 && response.status < 300) {
     return response;
   }
@@ -23,7 +23,7 @@ export default function request(url, options) {
     headers:{
       "Content-Type":"application/json",
       "Accept": "*/*",
-      "token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJvcmctdXNlciIsImlhdCI6MTYwMTAxNDM3NSwiZXhwIjoxNjAxMTAwNzc1LCJpZCI6IjEyNjU0ODU4NDUwODc5MjQyMjYiLCJuYW1lIjoiY2hlbmR4In0.spmZeOeNmkq4tO6MUmc5iBjy_hdzRUlfAH3WszBgApg",
+      "token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJvcmctdXNlciIsImlhdCI6MTYwNDI5Mjk1NywiZXhwIjoxNjA0Mzc5MzU3LCJpZCI6IjEyODE5NDAzMjQzODk3NzMzMTQiLCJuYW1lIjoiZ25heW5pbCJ9.FW6k6f7FyDB6ymxV-sDtI5cr_xShjwpy4-unTcqLWpQ",
       // "Accept":"*/*",
       // "Connection":"keep-alive"
     }
